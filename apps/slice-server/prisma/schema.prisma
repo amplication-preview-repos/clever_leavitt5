@@ -1,0 +1,69 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DB_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Shop {
+  categoryItems CategoryItem[]
+  createdAt     DateTime       @default(now())
+  cuisine       Cuisine?       @relation(fields: [cuisineId], references: [id])
+  cuisineId     String?
+  id            String         @id @default(cuid())
+  location      String?
+  name          String?
+  updatedAt     DateTime       @updatedAt
+}
+
+model Cuisine {
+  createdAt DateTime @default(now())
+  id        String   @id @default(cuid())
+  shops     Shop[]
+  updatedAt DateTime @updatedAt
+}
+
+model CategoryItem {
+  createdAt DateTime @default(now())
+  id        String   @id @default(cuid())
+  items     Item[]
+  name      String?
+  shop      Shop?    @relation(fields: [shopId], references: [id])
+  shopId    String?
+  updatedAt DateTime @updatedAt
+}
+
+model Item {
+  categoryItem   CategoryItem? @relation(fields: [categoryItemId], references: [id])
+  categoryItemId String?
+  createdAt      DateTime      @default(now())
+  files          File[]
+  id             String        @id @default(cuid())
+  name           String?
+  price          Float?
+  updatedAt      DateTime      @updatedAt
+}
+
+model File {
+  createdAt DateTime @default(now())
+  id        String   @id @default(cuid())
+  item      Item?    @relation(fields: [itemId], references: [id])
+  itemId    String?
+  name      String?
+  updatedAt DateTime @updatedAt
+  url       String?
+}
+
+model User {
+  createdAt DateTime @default(now())
+  email     String?  @unique
+  firstName String?
+  id        String   @id @default(cuid())
+  lastName  String?
+  password  String
+  roles     Json
+  updatedAt DateTime @updatedAt
+  username  String   @unique
+}
